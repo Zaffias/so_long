@@ -6,7 +6,7 @@
 /*   By: rpereda- <rpereda-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 16:33:30 by rpereda-          #+#    #+#             */
-/*   Updated: 2022/03/16 18:27:50 by rpereda-         ###   ########.fr       */
+/*   Updated: 2022/03/16 19:03:43 by rpereda-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
  #include <unistd.h>
  #include <stdlib.h>
  #include <fcntl.h>
- #include "./GetNextLine/get_next_line.h"
+ #include "get_next_line.h"
  typedef struct	s_vars {
 	int		pos[2];
 	int		winsize[2];
@@ -28,12 +28,9 @@
 	void	*collectible;
 	void	*exit;
 	char	*addr;
-	char	*path;
 	int		img_width;
 	int		img_height;
-	int		bits_per_pixel;
 	int		line_length;
-	int		endian;
 }	t_vars;
 
 enum {
@@ -50,7 +47,7 @@ enum {
 	D = 2,
 	ESC = 53,
 	SPC = 49,
-	SIZE = 32,        
+	SIZE = 64,        
 };
 
 
