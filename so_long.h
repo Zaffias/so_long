@@ -6,7 +6,7 @@
 /*   By: rpereda- <rpereda-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 16:33:30 by rpereda-          #+#    #+#             */
-/*   Updated: 2022/03/17 14:04:14 by rpereda-         ###   ########.fr       */
+/*   Updated: 2022/03/17 14:53:01 by rpereda-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,18 @@
 	void	*collectible;
 	void	*exit;
 	void	*floor;
-	char	*addr;
 	int		img_width;
 	int		img_height;
-	int		line_length;
 	char	*map_str;
 	char	**map;
 }	t_vars;
+
+typedef struct c_vars {
+	int collectibles;
+	int posy;
+	int posx;
+	int can_enter;
+}	c_vars;
 
 enum {
 	ON_KEYDOWN = 2,

@@ -6,7 +6,7 @@
 /*   By: rpereda- <rpereda-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:29:02 by rpereda-          #+#    #+#             */
-/*   Updated: 2022/03/17 14:06:06 by rpereda-         ###   ########.fr       */
+/*   Updated: 2022/03/17 15:08:06 by rpereda-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,28 +18,25 @@ void delimitators_error(t_vars *vars)
 	int len;
 	int i;
 	int j;
+	
 	i = 0;
 	j = 0;
 	len = ft_strlen(vars->map[i]);
-	
 	while(vars->map[0][j])
 	{
 		if (vars->map[0][j] != '1')
 		{
 			//liberar matriz
-			write(1,"ta mal", 6);
 			exit(1);
 		}
 		j++;
 	}
 	j = 0;
-
 	while(vars->map[vars->img_height - 1][j])
 	{
 		if (vars->map[vars->img_height - 1][j] != '1')
 		{
-			//liberar matriz
-			write(1,"ta mal", 6);
+			//liberar matriz usar funcion get out
 			exit(1);
 		}
 		j++;
@@ -48,7 +45,7 @@ void delimitators_error(t_vars *vars)
 	{
 		if(vars->map[i][0] != '1' || vars->map[i][len - 1] != '1')
 		{
-			//liberar matriz
+			//liberar matriz usar uncion get out
 			write(1,"ta mal",6);
 			exit(1);
 		}
@@ -82,11 +79,22 @@ void handle_errors(t_vars *vars)
 		i++;
 	}
 	delimitators_error(vars);
-	//TODO, comprobar que la primera linea, la ultima linea y tanto el primer caracter como el ultimo de todas las lineas sea un 1
 }
 void init(t_vars *vars){
-	vars->pos[0] = 0;
-	vars->pos[1] = 0;
+	int i;
+	int j;
+	
+	i = 0;
+	// while(vars->map[i])
+	// {
+	// 	j = 0;
+	// 	while(vars->map[i][j] != 'P')
+	// 		j++;
+	// 	i++;
+	// }
+	//printf("%d, %d\n", i , j);
+	// vars->pos[0] = i;
+	// vars->pos[1] = j;
 	vars->winsize[0] = SIZE;
 	vars->winsize[1] = SIZE;
 	vars->img_height = 0;
@@ -142,7 +150,7 @@ int	movement(int keycode, t_vars *vars)
 	//arreglar esta cosa
 	if(keycode == ESC){
 		mlx_destroy_window(vars->mlx, vars->win);
-		free(vars->map_str);
+		//free(vars->map_str);
 		exit(0);
 	}
 	if (keycode == D){
@@ -169,17 +177,22 @@ void draw_map(t_vars *vars)
 	int j;
 	i = 0;
 
-	while(vars->map[i])
+	while (vars->map[i])
 	{
 		j = 0;
 		while(vars->map[i][j])
 		{
+			if (vars->map[i][j])
+				mlx_put_image_to_window(vars->mlx, vars->win, vars->floor, SIZE * j, SIZE * i);
 			if (vars->map[i][j] == '1')
 				mlx_put_image_to_window(vars->mlx, vars->win, vars->obstacle, SIZE * j, SIZE * i);
-			if(vars->map[i][j] == 'C')
+			if (vars->map[i][j] == 'P')
 				mlx_put_image_to_window(vars->mlx, vars->win, vars->character, SIZE * j, SIZE * i);
-			if(vars->map[i][j] == '0')
-				mlx_put_image_to_window(vars->mlx, vars->win, vars->floor, SIZE * j, SIZE * i);
+			//TODO Descargar estas lindas imagenes
+			// if(vars->map[i][j] == 'C')
+			// 	mlx_put_image_to_window(vars->mlx, vars->win, vars->collectible, SIZE * j, SIZE * i);
+			// if(vars->map[i][j] == 'E')
+			// 	mlx_put_image_to_window(vars->mlx, vars->win, vars->exit, SIZE * j, SIZE * i);
 			j++;
 		}
 		i++;
@@ -187,8 +200,8 @@ void draw_map(t_vars *vars)
 }
 int main(int argc, char **argv)
 {
-	t_vars vars;
-	char buffer [8];
+	t_vars	vars;
+	c_vars	cvars;
 
 	if (argc != 2)
 		return (1);
