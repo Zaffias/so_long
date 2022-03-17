@@ -1,5 +1,5 @@
 
-SRCS =	so_long.c	get_next_line.c	get_next_line_utils.c
+SRCS =	so_long.c	ft_strlen.c	ft_split.c
 OBJS = ${SRCS:.c=.o}
 
 HDRS = so_long.h

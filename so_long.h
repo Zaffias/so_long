@@ -6,7 +6,7 @@
 /*   By: rpereda- <rpereda-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 16:33:30 by rpereda-          #+#    #+#             */
-/*   Updated: 2022/03/16 19:03:43 by rpereda-         ###   ########.fr       */
+/*   Updated: 2022/03/17 14:04:14 by rpereda-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
  #include <unistd.h>
  #include <stdlib.h>
  #include <fcntl.h>
- #include "get_next_line.h"
+ #include "./libft/libft.h"
  typedef struct	s_vars {
 	int		pos[2];
 	int		winsize[2];
@@ -27,10 +27,13 @@
 	void	*obstacle;
 	void	*collectible;
 	void	*exit;
+	void	*floor;
 	char	*addr;
 	int		img_width;
 	int		img_height;
 	int		line_length;
+	char	*map_str;
+	char	**map;
 }	t_vars;
 
 enum {
@@ -47,7 +50,7 @@ enum {
 	D = 2,
 	ESC = 53,
 	SPC = 49,
-	SIZE = 64,        
+	SIZE = 100,        
 };
 
 

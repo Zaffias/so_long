@@ -6,13 +6,84 @@
 /*   By: rpereda- <rpereda-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:29:02 by rpereda-          #+#    #+#             */
-/*   Updated: 2022/03/16 19:29:08 by rpereda-         ###   ########.fr       */
+/*   Updated: 2022/03/17 14:06:06 by rpereda-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <mlx.h>
 #include "so_long.h"
 
+void delimitators_error(t_vars *vars)
+{
+	int len;
+	int i;
+	int j;
+	i = 0;
+	j = 0;
+	len = ft_strlen(vars->map[i]);
+	
+	while(vars->map[0][j])
+	{
+		if (vars->map[0][j] != '1')
+		{
+			//liberar matriz
+			write(1,"ta mal", 6);
+			exit(1);
+		}
+		j++;
+	}
+	j = 0;
+
+	while(vars->map[vars->img_height - 1][j])
+	{
+		if (vars->map[vars->img_height - 1][j] != '1')
+		{
+			//liberar matriz
+			write(1,"ta mal", 6);
+			exit(1);
+		}
+		j++;
+	}
+	while(i < vars->img_height)
+	{
+		if(vars->map[i][0] != '1' || vars->map[i][len - 1] != '1')
+		{
+			//liberar matriz
+			write(1,"ta mal",6);
+			exit(1);
+		}
+		i++;
+	}
+}
+void handle_errors(t_vars *vars)
+{
+	int i;
+	int j;
+	if (vars->img_height == vars->img_width)
+	{
+		//free(vars->map_str); liberar matriz
+		exit(1);
+	}
+	i = 0;
+	while(vars->map[i])
+	{
+		j = 0;
+		while(vars->map[i][j])
+		{
+			if(vars->map[i][j] != '1' && vars->map[i][j] != '0' && vars->map[i][j] != 'C' 
+				&& vars->map[i][j] != 'E' && vars->map[i][j] != '\n' && vars->map[i][j] != 'P')
+			{
+				//free(vars->map_str); liberar matriz
+				write(1,"error",5);
+				exit(1);		
+			}
+			j++;
+		}
+		i++;
+	}
+	delimitators_error(vars);
+	//TODO, comprobar que la primera linea, la ultima linea y tanto el primer caracter como el ultimo de todas las lineas sea un 1
+}
 void init(t_vars *vars){
 	vars->pos[0] = 0;
 	vars->pos[1] = 0;
@@ -20,38 +91,58 @@ void init(t_vars *vars){
 	vars->winsize[1] = SIZE;
 	vars->img_height = 0;
 	vars->img_width = 0;
-	
 }
-char **matrix(int fd, t_vars *vars)
+void load_images(t_vars *vars)
 {
-	//TODO usar mi strlen :)))))))))
-	//TODO como verga reinicio el puto get_next_line sin ser tan cutre de abrir otro XD!
-	char **res;
+	vars->character = mlx_xpm_file_to_image(vars->mlx, "./images/my_man.xpm", &(vars->img_width), &(vars->img_height));
+	vars->obstacle = mlx_xpm_file_to_image(vars->mlx,"./images/obstacle.xpm", &(vars->img_width), &(vars->img_height));
+	vars->floor = mlx_xpm_file_to_image(vars->mlx,"./images/floor.xpm", &(vars->img_width), &(vars->img_height));
+	//TODO añadir resto de images
+	//TODO buscar imagenes XD!
+}
 
-	*res = get_next_line(fd);
-	vars->img_width = strlen(*res);
-	while(*res)
+void matrix(int fd, t_vars *vars, char *path)
+{
+	char	buffer[8];
+	int		bytes;
+	int		stop;
+
+	bytes = read(fd, buffer,8);
+	while (bytes != stop)
 	{
-		*res = get_next_line(fd);
-		vars->img_height++;
-		free(*res);
+		stop = bytes;
+		bytes += read(fd,buffer,8);
 	}
-	res = malloc(sizeof(char*) * vars->img_height);
-	*res = get_next_line(fd);
-	res++;
-	while(*res)
+	vars->map_str = malloc(sizeof(char) * bytes + 1);
+	close(fd);
+	fd = open(path, 0);
+	read(fd, vars->map_str, bytes);
+	vars->map_str[bytes + 1] = 0;
+	while(vars->map_str[vars->img_width])
 	{
-		*res = get_next_line(fd);
-		res++;
+		if(vars->map_str[vars->img_width] == '\n')
+			vars->img_height++;
+		vars->img_width++;
 	}
-	return res;
+	vars->img_height++;
+	vars->img_width /= vars->img_height;
+	vars->map = ft_split(vars->map_str, '\n');
+	free(vars->map_str);
+}
+
+int	get_out(t_vars *vars)
+{
+	//free(vars->map_str); cambiar por liberal la matriz
+	exit(0);
+	return(0);
 }
 
 int	movement(int keycode, t_vars *vars)
 {
-
+	//arreglar esta cosa
 	if(keycode == ESC){
 		mlx_destroy_window(vars->mlx, vars->win);
+		free(vars->map_str);
 		exit(0);
 	}
 	if (keycode == D){
@@ -72,38 +163,46 @@ int	movement(int keycode, t_vars *vars)
 	}
 	return (0);
 }
+void draw_map(t_vars *vars)
+{
+	int i;
+	int j;
+	i = 0;
 
-int main(int argc, char**argv)
+	while(vars->map[i])
+	{
+		j = 0;
+		while(vars->map[i][j])
+		{
+			if (vars->map[i][j] == '1')
+				mlx_put_image_to_window(vars->mlx, vars->win, vars->obstacle, SIZE * j, SIZE * i);
+			if(vars->map[i][j] == 'C')
+				mlx_put_image_to_window(vars->mlx, vars->win, vars->character, SIZE * j, SIZE * i);
+			if(vars->map[i][j] == '0')
+				mlx_put_image_to_window(vars->mlx, vars->win, vars->floor, SIZE * j, SIZE * i);
+			j++;
+		}
+		i++;
+	}
+}
+int main(int argc, char **argv)
 {
 	t_vars vars;
-	char **culo;
+	char buffer [8];
 
-	init(&vars);
 	if (argc != 2)
 		return (1);
+	init(&vars);
 	int fd = open(argv[1], 0);
-	culo = matrix(fd, &vars);
-	for (int i = 0; i < vars.img_height; i++){
-		printf("%s\n %d\n", culo[i], vars.img_height);
-	}
+	matrix(fd, &vars , argv[1]);
+	handle_errors(&vars);
 	vars.mlx = mlx_init();
 	vars.win = mlx_new_window(vars.mlx, vars.winsize[0] * vars.img_width, vars.winsize[1] * vars.img_height, "so_long");
-	mlx_put_image_to_window(vars.mlx, vars.win, vars.character, 0, 0);
+	load_images(&vars);
+	draw_map(&vars);
 	mlx_key_hook(vars.win, movement, &vars);
+	mlx_hook(vars.win, 17, 1L << 17, get_out, &vars);
 	mlx_loop(vars.mlx);
 	return (0);
 }
 
-void load_images(t_vars *vars)
-{
-	vars->character = mlx_xpm_file_to_image(vars->mlx, "./images/vapo.xpm", &(vars->img_width), &(vars->img_height));
-	//TODO añadir resto de images
-	//TODO buscar imagenes XD!
-}
-
-void handle_errors(t_vars *vars)
-{
-	if (vars->img_height == vars->img_width)
-		exit(1);
-	//TODO, comprobar que la primera linea, la ultima linea y tanto el primer caracter como el ultimo de todas las lineas sea un 1
-}
