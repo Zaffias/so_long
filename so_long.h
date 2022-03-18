@@ -6,7 +6,7 @@
 /*   By: rpereda- <rpereda-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/26 16:33:30 by rpereda-          #+#    #+#             */
-/*   Updated: 2022/03/17 14:53:01 by rpereda-         ###   ########.fr       */
+/*   Updated: 2022/03/18 16:37:44 by rpereda-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,10 @@
  #include <stdlib.h>
  #include <fcntl.h>
  #include "./libft/libft.h"
+ 
  typedef struct	s_vars {
 	int		pos[2];
+	int		charpos[2];
 	int		winsize[2];
 	void	*mlx;
 	void	*win;
@@ -32,14 +34,11 @@
 	int		img_height;
 	char	*map_str;
 	char	**map;
+	int		max_collectibles;
+	int		exit_checker;
+	int		character_checker;
+	int		collectibles;
 }	t_vars;
-
-typedef struct c_vars {
-	int collectibles;
-	int posy;
-	int posx;
-	int can_enter;
-}	c_vars;
 
 enum {
 	ON_KEYDOWN = 2,
@@ -58,5 +57,14 @@ enum {
 	SIZE = 100,        
 };
 
-
+//error handling
+ void 	handle_errors(t_vars *vars);
+ void 	delimitators_error(t_vars *vars);
+ void 	map_shape_checker (t_vars *vars);
+ void 	assets_checker (t_vars *vars);
+ int	get_out(t_vars *vars);
+ //movement y  eso
+ int	movement (int keycode, t_vars *vars);
+ void 	draw_map (t_vars *vars);
+//----------
 #endif
